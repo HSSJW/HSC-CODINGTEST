@@ -20,30 +20,21 @@ int main() {
 
 	}
 	
-	if (n <= l) {
-		for (int i = 1; i < n + 1; i++) {
-			if (129 <= v[i] && v[i] <= 138)
-				count++;
-		}
+	for (int i = 1; i < l; i++) {
+		if (129 <= v[i] && v[i] <= 138)
+			count++;
 	}
 
-	else {
-		
-		for (int i = 1; i < l; i++) {
-			if (129 <= v[i] && v[i] <= 138)
-				count++;
-		}
 
+	for (int i = l; i < n + 1; i++) {
 
-		for (int i = l; i < n + 1; i++) {
+		sum = v[i] - v[i - l];
 
-			sum = v[i] - v[i - l];
-
-			if (129 <= sum && sum <= 138) {
-				count++;
-			}
+		if (129 <= sum && sum <= 138) {
+			count++;
 		}
 	}
+	
 	cout << count;
 
 

@@ -1,0 +1,37 @@
+
+/*
+- 2022년 3월
+- 판매 날짜, 상품 ID, 유저 ID, 판매량
+- 오프라인 판매 데이텅일 경우 USER_ID는 NULL
+- 판매일 기준 오름차순 정렬 / 상품 ID기준 오름차순 / 유저 ID기준 오름차순 정렬
+
+USER_ID
+
+*/
+
+
+SELECT DATE_FORMAT(SALES_DATE, '%Y-%m-%d') AS SALES_DATE,
+    PRODUCT_ID,
+    USER_ID,
+    SALES_AMOUNT
+FROM 
+    ONLINE_SALE
+WHERE
+    SALES_DATE >= '2022-03-01' AND SALES_DATE < '2022-04-01'
+
+UNION ALL
+
+SELECT DATE_FORMAT(SALES_DATE, '%Y-%m-%d') AS SALES_DATE,
+    PRODUCT_ID,
+    NULL AS USER_ID, # 원래 없던 자리를 NULL로 채워주기
+    SALES_AMOUNT
+FROM 
+    OFFLINE_SALE
+WHERE
+    SALES_DATE >= '2022-03-01' AND SALES_DATE < '2022-04-01'
+
+
+ORDER BY
+    SALES_DATE ASC,
+    PRODUCT_ID ASC,
+    USER_ID ASC;

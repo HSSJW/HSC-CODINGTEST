@@ -16,11 +16,13 @@ dp[2] = 2
 def solution(n):
     answer = 0
     dp = [0] * (n+1)
+    
+    # ✅✅✅✅✅✅✅ n이 점화식에 필요한 2보다 작을 수도 있으므로 예외처리가 필요하다.
     if n == 1:
         return 1
     elif n == 2:
         return 2
-    
+    # ✅✅✅✅✅✅✅
     
     dp[0] = 0
     dp[1] = 1

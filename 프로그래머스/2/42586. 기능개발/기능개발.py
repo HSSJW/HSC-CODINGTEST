@@ -1,56 +1,63 @@
-from collections import deque
+"""
+<힌트>
+- 각 기능의 개발 속도가 다르기 때문에 늦게 들어온 기능이 앞에있는 기능보다 먼저 개발될 수 있다.
+
+
+<조건>
+- 진도가 100% 일 때만 반영 가능
+- 뒤에있는 기능이 먼저 개발되면 대기하다가 앞에있는 기능이 배포될 때 함께 배포된다.
+
+progresses : 배포되는 순서대로 현재 작업 진도가 적인 정수 list
+speeds : i번 작업의 하루 개발 속도
+
+<접근>
+- 하루에 speeds[i]를 더해서 100이 넘어가면 days에 며칠걸리는지 저장한다.
+- 그리고 리스트 days를 만들어서 front -> back 검사하면서 days[i+1]가 days[i]보다 크면 앞에 개수를 세서 answer에 append 한다.
+    - 이후 개수를 초기화 한다.
+"""
+import math
 
 def solution(progresses, speeds):
     answer = []
-    queue = deque()
-    """
-    - 진도가 100%일 때 서비스에 반영
-    - 뒤에있는 기능이 먼저 개발될 수 있지만 배포는 앞에있는 기능이 배포될 때 함께 배포
-    - progresses : 먼저 배포되어야 하는 순서대로 작업의 진도가 적힌 정수 배열
-    - speeds : 각 작업의 개발 속도가 적힌 정수 배열
-    - 배포는 하루에 한번만 가능
+    n = len(speeds)
+    days = [] # i번째 기능완료가 되는데 걸리는 일수를 기록한다.
     
-    answer = 각 배포마다 (몇개)의 기능이 배포?
-    
-    """
-    
-    progresses_days = []
-    
-    for i in range(len(progresses)):
-        rest_job = 100 - progresses[i]
-        speed = speeds[i]
-        period = 0
+    for prog, speed in zip(progresses, speeds):
         
-        if rest_job % speed == 0: # 특정 작업의 남은일이 나누어 떨어지는 경우
-            period = rest_job/speed
-            
-        else: # 나누어 떨어지지 않는 경우
-            period = rest_job//speed + 1 # 남은 작업을 끝내는 일 수
-            
-        progresses_days.append(period)
         
-        # [7, 3, 9]
+        
+        remain = 100 - prog # 남은 작업량
+        
+        tmp_day = math.ceil(remain / speed) # i번째 일을 하는데 남은 일 수
+        
+        days.append(tmp_day)
+        
+    
+    count = 0
+    max_day = days[0]
+    # days -> 0 1 2
+    # n = 3
+    
+    # print(days)
+    for i in range(n): # 0 1 2
+        
+        
+        
+        # 앞에 작업끝 날때 까지 아직 안끝남 -> 일단 앞에것들 배포
+        if days[i] > max_day: 
+            # print(f'{count} 넣어주기')
+            answer.append(count)
+            count = 1
+            max_day = days[i]
 
-        
-    for i in range(len(progresses_days)):
-        now_pro = progresses_days[i]
             
-            
-        if len(queue) == 0:
-            queue.append(now_pro)
-                
-            continue
-                
-            
-        if queue[0] >= now_pro: # 현재 작업이 다음 배포되야할 작업보다 먼저 끝나는 경우 -> 다음 배포때 함께 진행
-            queue.append(now_pro)
         else:
-            answer.append(len(queue))  # 다음 배포 때 배포될 작업 개수 저장하고
-            queue.clear() # 큐 비우기
-            queue.append(now_pro)
+            count += 1
+        # print(f'i = {i} days[{i}] = {days[i]} count = {count} max_day = {max_day}')
             
-            
-    answer.append(len(queue))
-
-    
+    answer.append(count)
     return answer
+
+
+
+

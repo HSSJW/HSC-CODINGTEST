@@ -1,13 +1,21 @@
 """
 <힌트>
-- 심사관 마다 걸리는 시간이 다르다. -> 비용이 다르다.
-- 줄서있는 순서대로 심사받는다.
-    - 여러개의 심사대가 있다.
+- 한 심사대는 동시에 한 명만 심사
+- 시간? -> 시뮬레이션?
+- 가장 앞에 서있는 사람을 비어 있는 곳으로 가서 심사 -> 줄 -> 큐?
 
-- input값의 크기가 엄청나게 크다. -> 이분탐색? 그리디?
-    
+
 <조건>
-심사대 수 : len(times)
+n : 입국 심사를 기다리는 사람 수
+times : 각 심사관이 요구하는 시간
+
+<목표>
+- 모든 사람이 심사를 받는데 걸리는 시간의 최솟값
+    -> 최소 시간 -> 경로탐색 아니고, dp 살짝 의심가지만 입력이 100,000 이므로 시간복잡도 줄이기
+        -> i분에 심사 가능했으면 i+k분은 볼 필요도 없이 가능이다. -> 파라메트릭 서치
+        
+    
+        
 
 
 """
@@ -15,33 +23,40 @@
 def solution(n, times):
     answer = 0
     
-    lo, hi = 1, min(times) * n
     
-    def check(mid): # 이 시간으로 통과 가능한지? -> time동안 n명을 처리 가능한지?
+    # mid시간 안에 n명의 심사가 가능한지
+    # mid분에 할 수 사람 수 = mid // times[i] 모두 더하기
+    def check(mid):
         
         count = 0
         
         for time in times:
+            count += mid // time # mid분에 통과할 수 있는건 소수점 버림
+                
             
-            count += mid // time # 특정 심사관이 mid 시간동안 처리 가능한 인원 수
-        
-            if count >= n:
-                return True
-        
-        return False
-        
-        
+        if count >= n:
+
+            return True
+        else:
+            return False
+            
+    
+    
+    lo = 1
+    hi = max(times) * n # 가장 오래걸리는 사람한테 모두 받기
+    
+    
     while lo <= hi:
         
         mid = (lo + hi) // 2
         
-        if check(mid): # 최소를 찾아야하므로 만족하면 왼쪽으로
-            answer = mid # 가장 최근에 가능한 걸 확인한 값이 결과
+        
+        if check(mid):
+            answer = mid
             hi = mid - 1
-            
-        else:          # 이 조건에서 불가능 했으므로 더 큰 시간 범위로 이동한다.
+        else:
             lo = mid + 1
-            
     
     
     return answer
+

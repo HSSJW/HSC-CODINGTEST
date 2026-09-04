@@ -1,58 +1,76 @@
 """
 <힌트>
-- 과락 : (근태 점수) (동료 평가 점수) 둘다 다른 사람보다 낮은 경우가 한번이라도 존재하는 경우
-- 한번이라도 존재 -> 모두 검사해야함 -> 완탐인데 이중 반복문 불가능
-    👉 이중 반복문이 필요하다는 것은 두개의 축이 있다는 것이다. -> 하나의 축을 먼저 정렬해버리면 1중 반복문으로 테스트 가능 -> 각 축을 각각 다른 기준으로 정렬해버리고 1순위 정렬을 그대로 두고 2순위 정렬 축을 기준으로 비교하면된다.
+- 근무 태도, 동료 평가
+- 두 점수가 모두 다른 사원보다 낮은 경우가 '한 번이라도' -> 완전탐색
+    -> 인센 못받음
+- 인센 받는 사원들을 (근태, 동평) 높은 순으로 차등 지급
+    - 동일하면 동석차
+    - 그다음은 건너뜀
 
+
+<조건>
+- [0]이 완호의 점수
+
+<목표>
+- 완호의 석차 구하기
 
 <접근>
-1. 근태 점수를 먼저 내림차순 정렬 -> index가 증가할수록 근태점수는 같거나 같다 
-2. 
+- 등수 세우기 -> 초기 데이터 순서 무의미하다 + 각 원소들 대소비교 -> 정렬 해버리자 -> 단방향 패턴 분석
+- 찾아야 하는 특이 조건이 a, b모두 다른 것들보다 작은 경우 -> '작은' 것이 특이점이므로 큰쪽부터 검사
+    -> [4,3][4,3][3,3][2,5][1,4]
+    -> a, b둘다 이전보다 작은 경우를 검사한다.
+    -> a를 기준으로 정렬해버렸으므로 이제 b에 대해서만 고려하면된다.
 
-[3,2] [3,2] [2,1] [2,2] [1,4]
-[내림, 오름] -> 0번 인덱스가 같은 경우에는 scores[i]와 scores[i+1]을 비교했을 때 
-            - b의 1번 인덱스가 a의 1번 인덱스보다 작은 경우는 무조건 둘다 더 작은 과락이다 -> 1번 인덱스는 오름차순 이므로 오른쪽으로 갈 수록 커지고 때문에 [0]이 같은데 [1]은 더 작은 경우가 존재할 수 없다. 
 """
 
+from collections import Counter
 
 def solution(scores):
     answer = 0
     
-    whanho = scores[0]
+    if len(scores) == 1:
+        return 1
+    
+    whan = scores[0] # 완호 점수 기록
     whan_s = scores[0][0] + scores[0][1]
-
+    line = [] # 합격자들 점수 기록
     
-    scores.sort(key=lambda x :(-x[0], x[1])) # 0번 : 근태 점수 -> 내림차순 1번 : 동료 점수 -> 오름 차순
+    scores.sort(key=lambda x: (-x[0], x[1])) # 동점자 처리 -> 0번 인덱스는 내림차순, 2번은 오름
     
     
-    sum_scores = [scores[0][0] + scores[0][1]] # 가장 큰 사람
     
-    max_y = scores[0][1]
+    # a, b가 모두 a_max, b_max보다 작은 경우를 찾아서 pop
+    a_max = 0
+    b_max = 0
     
-    for i in range(1, len(scores)):
+    for i, score in enumerate(scores.copy()):
+        a, b = score
         
-        if max_y < scores[i][1]: # [0]은 오른쪽이 무조건 같거나 작다 -> 앞족에 [1]이더 큰 경우가 있었으면 과락 
-            max_y = scores[i][1]
-        
-        if scores[i][1] < max_y: # 과락 -> 추가하지 않는다.
+        if a_max > a and b_max > b: # 과락
             
-            if scores[i] == whanho: # 완호가 과락인 경우
+
+            
+            if whan == score: # 완호가 과락
+                print('완호 과락')
                 return -1
             pass
-        
-        else:
-            sum_scores.append(scores[i][0] + scores[i][1])
+        else: # 합격
+            line.append(a+b) # 인센 대상자에 점수 합 추가
             
-    sum_scores.sort(reverse=True) # 내림차순 정렬
-    bigger_list = [] # 완호 점수보다 높은 것들 넣기
-    
-    for sum_score in sum_scores:
-        answer += 1
         
-        if sum_score <= whan_s:
-            return answer
-        
-            
+        if a_max < a:
+            a_max = a
+        if b_max < b:
+            b_max = b
+    line.sort(reverse = True)
+
+    
+    counter = Counter(line) # 점수별 명수
+    
+    for s, p in counter.items():
+        if s > whan_s:
+            answer += p
     
     
-    return answer
+    
+    return answer+1 #
